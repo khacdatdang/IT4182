@@ -91,7 +91,7 @@ Token* readIdentKeyword(void) {
     tokenReadIdentKeyword->string[i] = currentChar;
     currentChar = readChar();
   }
-
+  tokenReadIdentKeyword->string[i+1] = '\0';
   if (i > MAX_IDENT_LEN)
   {
     error(ERR_IDENTTOOLONG, tokenReadIdentKeyword->lineNo, tokenReadIdentKeyword->colNo);
@@ -121,6 +121,7 @@ Token* readNumber(void) {
     tokenNum->string[1] = '.';
     checkDot = 1;
     i = 2;
+    tokenNum->colNo -= 1;
   }
   do
   {
@@ -402,7 +403,7 @@ void printToken(Token *token) {
   case TK_IDENT: printf("TK_IDENT(%s)\n", token->string); break;
   case TK_NUMBER: printf("TK_NUMBER(%s)\n", token->string); break;
   case TK_CHAR: printf("TK_CHAR(\'%s\')\n", token->string); break;
-  case TK_STRING: printf("TK_STRING(\'\'%s\'\')\n", token->string); break;
+  case TK_STRING: printf("TK_STRING(\'%s\')\n", token->string); break;
   case TK_EOF: printf("TK_EOF\n"); break;
   case TK_FLOAT: printf("TK_FLOAT(%s)\n", token->string); break;
 
