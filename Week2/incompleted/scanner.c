@@ -112,7 +112,7 @@ Token* readIdentKeyword(void) {
 
 Token* readNumber(void) {
   //TODO
-  Token* tokenNum = makeToken(TK_NUMBER, lineNo, colNo);
+  Token* tokenNum = makeToken(TK_NUMBER, lineNo, colNo ) ;
   int i = 0;
   int checkDot = 0;
   if (intPart == 0)
@@ -123,6 +123,8 @@ Token* readNumber(void) {
     i = 2;
     tokenNum->colNo -= 1;
   }
+  else
+    tokenNum = makeToken(TK_NUMBER, lineNo, colNo);
   do
   {
     if (charCodes[currentChar] == EOF) break;
@@ -144,8 +146,6 @@ Token* readNumber(void) {
     tokenNum->tokenType = TK_FLOAT;
   
   return tokenNum;
-    i = 2;
-    readChar();
   }
 
 
@@ -188,7 +188,7 @@ Token* readString(){
 
   int i = 0;
   readChar();
-  Token* result = makeToken(TK_STRING, lineNo, colNo);
+  Token* result = makeToken(TK_STRING, lineNo, colNo-1);
 
   do {
     if (charCodes[currentChar] == CHAR_DOUBLEQUOTE) break;
