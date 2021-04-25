@@ -22,7 +22,11 @@ typedef enum {
   ERR_INVALIDCOMPARATOR,
   ERR_INVALIDEXPRESSION,
   ERR_INVALIDTERM,
-  ERR_INVALIDFACTOR
+  ERR_INVALIDFACTOR,
+  ERR_INVALIDCONSTDECL,
+  ERR_INVALIDTYPEDECL,
+  ERR_INVALIDVARDECL,
+  ERR_INVALIDSUBDECL
 } ErrorCode;
 
 
@@ -40,6 +44,10 @@ typedef enum {
 #define ERM_INVALIDEXPRESSION "Invalid expression!"
 #define ERM_INVALIDTERM "Invalid term!"
 #define ERM_INVALIDFACTOR "Invalid factor!"
+#define ERM_INVALIDCONSTDECL "Invalid constant declaration"
+#define ERM_INVALIDTYPEDECL "Invalid type declaration"
+#define ERM_INVALIDVARDECL "Invalid var declaration"
+#define ERM_INVALIDSUBDECL "Invalid sub declaration"
 
 void error(ErrorCode err, int lineNo, int colNo);
 void missingToken(TokenType tokenType, int lineNo, int colNo);
