@@ -16,6 +16,7 @@ struct {
   {"CONST", KW_CONST},
   {"TYPE", KW_TYPE},
   {"VAR", KW_VAR},
+  {"STRING",KW_STRING},
   {"INTEGER", KW_INTEGER},
   {"CHAR", KW_CHAR},
   {"ARRAY", KW_ARRAY},
