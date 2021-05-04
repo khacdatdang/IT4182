@@ -259,6 +259,9 @@ void compileType(void)
     eat(KW_OF);
     compileType();
     break;
+  case KW_STRING:
+    eat(KW_STRING);
+    break;
   case TK_IDENT:
     eat(TK_IDENT);
     break;
@@ -353,6 +356,9 @@ void compileStatement(void)
   case KW_IF:
     compileIfSt();
     break;
+  case KW_DO:
+    compileDoWhileSt();
+    break;
   case KW_WHILE:
     compileWhileSt();
     break;
@@ -430,6 +436,15 @@ void compileWhileSt(void)
   assert("While statement parsed ....");
 }
 
+void compileDoWhileSt(void)
+{
+  assert("Parsing a do while statement ....");
+  eat(KW_DO);
+  compileStatement();
+  eat(KW_WHILE);
+  compileCondition();
+  assert("Do while statement parsed ....");
+}
 void compileForSt(void)
 {
   assert("Parsing a for statement ....");
@@ -461,6 +476,7 @@ void compileArguments(void)
   case SB_PLUS:
   case SB_MINUS:
   case SB_TIMES:
+  case SB_MOD:
   case SB_SLASH:
   case KW_TO:
   case KW_DO:
@@ -573,7 +589,8 @@ void compileTerm2(void)
 {
   while (
       lookAhead->tokenType == SB_TIMES ||
-      lookAhead->tokenType == SB_SLASH)
+      lookAhead->tokenType == SB_SLASH ||
+      lookAhead->tokenType == SB_MOD)
   {
     if (lookAhead->tokenType == SB_TIMES)
     {
@@ -582,6 +599,10 @@ void compileTerm2(void)
     else if(lookAhead->tokenType == SB_SLASH)
     {
       eat(SB_SLASH);
+    }
+    else if(lookAhead->tokenType == SB_MOD)
+    {
+      eat(SB_MOD);
     }
     else{
       error(ERR_INVALIDTERM, lookAhead->lineNo, lookAhead->colNo);
@@ -610,6 +631,9 @@ void compileFactor(void)
     break;
   case TK_CHAR:
     eat(TK_CHAR);
+    break;
+  case TK_STRING:
+    eat(TK_STRING);
     break;
   case SB_LPAR:
     eat(SB_LPAR);

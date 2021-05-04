@@ -118,6 +118,24 @@ Token* readConstChar(void) {
   }
 }
 
+Token* readString(){
+
+  int i = 0;
+  readChar();
+  Token* result = makeToken(TK_STRING, lineNo, colNo-1);
+
+  do {
+    if (charCodes[currentChar] == CHAR_DOUBLEQUOTE) break;
+    result->string[i] = (char) currentChar;
+    i++;
+    readChar();
+  } while (1);
+  
+  result->string[i] = '\0';
+  readChar();
+  return result;
+}
+
 Token* getToken(void) {
   Token *token;
   int ln, cn;
@@ -202,6 +220,7 @@ Token* getToken(void) {
       return makeToken(SB_ASSIGN, ln, cn);
     } else return makeToken(SB_COLON, ln, cn);
   case CHAR_SINGLEQUOTE: return readConstChar();
+  case CHAR_DOUBLEQUOTE: return readString();
   case CHAR_LPAR:
     ln = lineNo;
     cn = colNo;
@@ -225,6 +244,11 @@ Token* getToken(void) {
     token = makeToken(SB_RPAR, lineNo, colNo);
     readChar(); 
     return token;
+  case CHAR_MOD:
+    token = makeToken(SB_MOD, lineNo, colNo);
+    readChar(); 
+    return token;
+    break;
   default:
     token = makeToken(TK_NONE, lineNo, colNo);
     error(ERR_INVALIDSYMBOL, lineNo, colNo);
@@ -255,7 +279,7 @@ void printToken(Token *token) {
   case TK_NUMBER: printf("TK_NUMBER(%s)\n", token->string); break;
   case TK_CHAR: printf("TK_CHAR(\'%s\')\n", token->string); break;
   case TK_EOF: printf("TK_EOF\n"); break;
-  case TK_STRING: printf("TK_STRING(\'%s\')\n", token->string); break;
+  case TK_STRING: printf("TK_STRING(\"%s\")\n", token->string); break;
 
   case KW_PROGRAM: printf("KW_PROGRAM\n"); break;
   case KW_CONST: printf("KW_CONST\n"); break;
@@ -277,7 +301,7 @@ void printToken(Token *token) {
   case KW_DO: printf("KW_DO\n"); break;
   case KW_FOR: printf("KW_FOR\n"); break;
   case KW_TO: printf("KW_TO\n"); break;
-  case KW_STRING: printf("KW_ARRAY\n"); break;
+  case KW_STRING: printf("KW_STRING\n"); break;
 
   case SB_SEMICOLON: printf("SB_SEMICOLON\n"); break;
   case SB_COLON: printf("SB_COLON\n"); break;
@@ -298,6 +322,7 @@ void printToken(Token *token) {
   case SB_RPAR: printf("SB_RPAR\n"); break;
   case SB_LSEL: printf("SB_LSEL\n"); break;
   case SB_RSEL: printf("SB_RSEL\n"); break;
+  case SB_MOD: printf("SB_MOD\n"); break;
   }
 }
 

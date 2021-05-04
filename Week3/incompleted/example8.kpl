@@ -1,0 +1,12 @@
+PROGRAM Example8; (* Example 8 *)
+VAR D:STRING;
+    I : INTEGER;
+BEGIN
+D:= "hello";
+I:= 1;
+DO 
+    I := I + 1
+WHILE I < 10;
+WHILE I < 20 ;
+END. (* Example 1 *)
+
