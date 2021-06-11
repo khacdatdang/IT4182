@@ -732,23 +732,29 @@ Type *compileExpression2(void)
   return type;
 }
 
-void compileExpression3(void)
-{
-  Type *type;
+Type* compileExpression3(void) {
+  
+  Type* type1;
+  Type* type2;
 
-  switch (lookAhead->tokenType)
-  {
+  switch (lookAhead->tokenType) {
   case SB_PLUS:
     eat(SB_PLUS);
-    type = compileTerm();
-    checkIntType(type);
-    compileExpression3();
+    type1 = compileTerm();
+    checkIntType(type1);
+    type2 = compileExpression3();
+    if (type2 != NULL)
+      checkIntType(type2);
+    return type1;
     break;
   case SB_MINUS:
     eat(SB_MINUS);
-    type = compileTerm();
-    checkIntType(type);
-    compileExpression3();
+    type1 = compileTerm();
+    checkIntType(type1);
+    type2 = compileExpression3();
+    if (type2 != NULL)
+      checkIntType(type2);
+    return type1;
     break;
     // check the FOLLOW set
   case KW_TO:
@@ -766,12 +772,13 @@ void compileExpression3(void)
   case KW_END:
   case KW_ELSE:
   case KW_THEN:
+    return NULL;
     break;
   default:
     error(ERR_INVALID_EXPRESSION, lookAhead->lineNo, lookAhead->colNo);
   }
+  
 }
-
 Type *compileTerm(void)
 {
   Type *type;
