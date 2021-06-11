@@ -1,10 +1,10 @@
 Program Example6;
    Const c1 = 10;
   	 c2 = 'a';
-   Type t1 = array(. 10 .) of integer;
+   Type t1 = array(.10.) of integer;
    Var v1 : Integer;
-       v2 : Array(. 10 .) of t1;
-       a : array (. 10  .) of Double;
+       v2 : Array(.10.) of t1;
+       a : array (.10.) of Double;
        b : String;
    Function F(p1 : Integer; Var p2 : char) : Integer;
      Begin
@@ -15,7 +15,7 @@ Program Example6;
      const c1 = 'a';
            c3 = 10;
      type t1 = integer;
-          t2 = array(. 10 .) of t1;
+          t2 = array(.10.) of t1;
      var v2 : t2;
          v3 : char;
      begin
@@ -25,6 +25,6 @@ Program Example6;
 
 Begin
      call p(c1);
-     a(. 5 .) := 5.5 ; 
+     a(.5.) := 5.5 ; 
      b := "hello world";
 End.
