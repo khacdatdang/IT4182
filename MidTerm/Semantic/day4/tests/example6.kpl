@@ -4,8 +4,9 @@ Program Example6;
    Type t1 = array(.10.) of integer;
    Var v1 : Integer;
        v2 : Array(.10.) of t1;
-       a : array (.10.) of Double;
-       b : String;
+       a : Array(.10.) of Double;
+       b : Double;
+       c : Integer;
    Function F(p1 : Integer; Var p2 : char) : Integer;
      Begin
        f := c1;
@@ -25,6 +26,6 @@ Program Example6;
 
 Begin
      call p(c1);
-     a(.5.) := 5.5 ; 
-     b := "hello world";
+     a(.2.), b := 5, 7.5;
+     b,c := c,5,10;
 End.

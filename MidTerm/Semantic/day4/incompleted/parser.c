@@ -484,25 +484,6 @@ Type *compileLValue(void)
   return varType;
 }
 
-Type** compileRValue(void){
-  Type** typeList;
-  Type* type;
-  typeList = (Type**) malloc(10*sizeof(Type*));  
-  int count = 0;
-
-  type = compileExpression();
-  typeList[count++] = type;
-  assert("Parsing first right value");
-  while (lookAhead->tokenType == SB_COMMA)
-  {
-    eat(SB_COMMA);
-    type = compileExpression();
-    typeList[count++] = type;
-  }
-  printf("%d \n",count);
-  return typeList;
-}
-
 void compileAssignSt(void) {
   // TODO: parse the assignment and check type consistency
  // printf("Checking assign\n");
