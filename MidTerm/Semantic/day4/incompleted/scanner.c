@@ -143,22 +143,37 @@ Token* readConstChar(void) {
     return token;
   }
 }
-Token* readString(){
-
-  int i = 0;
+Token *readString(void){
+  Token *token = makeToken(TK_STRING, lineNo, colNo);
+  token->string[0] = '\"';
+  int count = 1;
   readChar();
-  Token* result = makeToken(TK_STRING, lineNo, colNo-1);
-
-  do {
-    if (charCodes[currentChar] == CHAR_DOUBLEQUOTE) break;
-    result->string[i] = (char) currentChar;
-    i++;
+  while(1){
+    if(count > MAX_IDENT_LEN){
+      error(ERR_IDENT_TOO_LONG, lineNo, colNo);
+      return NULL;
+    }
+    if(currentChar == EOF){
+      error(ERR_INVALID_SYMBOL, lineNo, colNo);
+      return NULL;
+    }
+    if(charCodes[currentChar] == CHAR_DOUBLEQUOTE) 
+      break;
+    token->string[count] = (char) currentChar;
+    count++;
     readChar();
-  } while (1);
-  
-  result->string[i] = '\0';
+  }
+  if (charCodes[currentChar] != CHAR_DOUBLEQUOTE){
+    error(ERR_INVALID_SYMBOL, lineNo, colNo);
+    return NULL;
+  }
+  else {
+    token->string[count] = '\"';
+    count++;
+  }
+  token->string[count] = '\0';
   readChar();
-  return result;
+  return token;  
 }
 
 Token* getToken(void) {
