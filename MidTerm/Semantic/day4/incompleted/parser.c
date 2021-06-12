@@ -507,11 +507,13 @@ void compileAssignSt(void) {
   // TODO: parse the assignment and check type consistency
  // printf("Checking assign\n");
   Type* varType;
-  Type** expType;
+  Type* expType;
   int count = 0;
-  int count2 = 0;
+
   Type** varTypeList;
+  Type** expTypeList;
   varTypeList = (Type** ) malloc(10 * sizeof(Type*));
+  expTypeList = (Type** ) malloc(10 * sizeof(Type*));
 
   varType = compileLValue();
   varTypeList[count++] = varType;
@@ -524,21 +526,32 @@ void compileAssignSt(void) {
   }
 
   eat(SB_ASSIGN);
-  assert("Parsing Right value");
-  expType = compileRValue();
+
+  count = 0;
   
+  expType = compileExpression();
+  expTypeList[count++] = expType;
+
+  while (lookAhead->tokenType == SB_COMMA)
+  {
+    eat(SB_COMMA);
+    expType = compileExpression();
+    expTypeList[count++] = expType;
+  }
+  
+  count = 0;
   do
   {
-    if (varTypeList[count2] == NULL)
+    if (varTypeList[count] == NULL)
       error(ERR_MISSING_LEFT,currentToken->lineNo,currentToken->lineNo);
-    else if (expType[count2] == NULL)
+    else if (expTypeList[count] == NULL)
       error(ERR_MISSING_RIGHT,currentToken->lineNo,currentToken->lineNo);
     else 
     {
-      checkTypeEquality(varTypeList[count2], expType[count2]);
-      count2 += 1;
+      checkTypeEquality(varTypeList[count], expTypeList[count]);
+      count += 1;
     }
-  } while (varTypeList[count2] != NULL || expType[count2]!= NULL);
+  } while (varTypeList[count] != NULL || expTypeList[count]!= NULL);
   
 }
 
@@ -629,7 +642,7 @@ void compileArguments(ObjectNode* paramList) {
   //TODO: parse a list of arguments, check the consistency of the arguments and the given parameters
   
   ObjectNode* node = paramList;
-  assert("Parsing argument");
+  
   switch (lookAhead->tokenType) {
   case SB_LPAR:
     eat(SB_LPAR);
