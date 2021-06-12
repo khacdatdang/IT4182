@@ -17,8 +17,8 @@
 extern int lineNo;
 extern int colNo;
 extern int currentChar;
-int intPart;
-int i = 0;
+int checkRSEL = 0;
+int lineNum = 0, colNum = 0;
 extern CharCode charCodes[];
 int maxNumberDigit = 10;
 
@@ -77,46 +77,43 @@ Token* readIdentKeyword(void) {
 }
 
 Token* readNumber(void) {
-  //TODO
-  Token* tokenNum = makeToken(TK_NUMBER, lineNo, colNo ) ;
-  int i = 0;
-  int checkDot = 0;
-  if (intPart == 0)
-  {
-    tokenNum->string[0] = '0';
-    tokenNum->string[1] = '.';
-    checkDot = 1;
-    i = 2;
-    tokenNum->colNo -= 1;
+  Token *token = makeToken(TK_NUMBER, lineNo, colNo);
+
+  int count = 0;
+  while(charCodes[currentChar] == CHAR_DIGIT){
+    token->string[count] = (char)currentChar;
+    count++;
+    readChar();
   }
-  else
-    tokenNum = makeToken(TK_NUMBER, lineNo, colNo);
-  do
-  {
-    if (charCodes[currentChar] == EOF) break;
-    if ((charCodes[currentChar] == CHAR_PERIOD) && checkDot == 1) break;
-    if ((charCodes[currentChar] == CHAR_PERIOD) && checkDot == 0) checkDot = 1;
-      tokenNum->string[i] = (char)currentChar;
-      i+= 1;
-      readChar();
-  } while (charCodes[currentChar] == CHAR_DIGIT || charCodes[currentChar] == CHAR_PERIOD);
-  
-  if (tokenNum->string[i-1] == '.')
-  {
-    tokenNum->string[i] = '0';
-    i += 1;
-  }
-  tokenNum->string[i] = '\0';
-  if (checkDot == 1)
-    {
-      tokenNum->tokenType = TK_DOUBLE;
+  if (charCodes[currentChar] == CHAR_PERIOD){
+    lineNum = lineNo; 
+    colNum = colNo;
+    token->string[count] = (char)currentChar;
+    token->tokenType = TK_DOUBLE;
+    count++;
+    readChar();
+    if (currentChar != EOF && charCodes[currentChar] == CHAR_RPAR){
+      checkRSEL = 1;
+      token->tokenType = TK_NUMBER;
+      token->string[count-1] = '\0';
+      token->value = atoi(token->string);
+      return token;
     }
-  else 
-      tokenNum->value = atoi(tokenNum->string);
-  
-  return tokenNum;
+    while (charCodes[currentChar] == CHAR_DIGIT) {
+      token->string[count] = (char)currentChar;
+      count++;
+      readChar();
+    }
+    if (charCodes[currentChar] == CHAR_PERIOD) {
+      error(ERR_INVALID_SYMBOL,lineNo,colNo);
+      return NULL;
+    } 
   }
 
+  token->string[count] = '\0';
+  token->value = atoi(token->string);
+  return token;
+}
 Token* readConstChar(void) {
   Token *token = makeToken(TK_CHAR, lineNo, colNo);
 
@@ -171,14 +168,17 @@ Token* getToken(void) {
   if (currentChar == EOF) 
     return makeToken(TK_EOF, lineNo, colNo);
 
+  if(checkRSEL == 1){
+    checkRSEL = 0;
+    token = makeToken(SB_RSEL, lineNum, colNum);
+    readChar();
+    return token;
+  }
+
   switch (charCodes[currentChar]) {
   case CHAR_SPACE: skipBlank(); return getToken();
   case CHAR_LETTER: return readIdentKeyword();
-  case CHAR_DIGIT: 
-  {
-    intPart = 1;
-    return readNumber();
-  }
+  case CHAR_DIGIT:  return readNumber();
   case CHAR_PLUS: {
     token = makeToken(SB_PLUS, lineNo, colNo);
     readChar(); 
@@ -259,22 +259,31 @@ Token* getToken(void) {
       return token;
     }
   case CHAR_PERIOD:
-  
     ln = lineNo;
     cn = colNo;
     readChar();
-    if ((currentChar != EOF) && (charCodes[currentChar] == CHAR_RPAR))
-    {
+    if (currentChar != EOF && charCodes[currentChar] == CHAR_RPAR){
       readChar();
       return makeToken(SB_RSEL, ln, cn);
     }
-    else if(charCodes[currentChar] == CHAR_DIGIT)
-    {
-      intPart = 0;
-      return readNumber();
+    if (currentChar != EOF && charCodes[currentChar] == CHAR_DIGIT) {
+      token = makeToken(TK_DOUBLE, ln, cn);
+      token->string[0] = '0';
+      token->string[1] = '.';
+      int count = 2;
+      while (charCodes[currentChar] == CHAR_DIGIT) {
+        token->string[count] = (char)currentChar;
+        count++;
+        readChar();
+      }
+      if (charCodes[currentChar] == CHAR_PERIOD) {
+        error(ERR_INVALID_SYMBOL,lineNo,colNo);
+        return NULL;
+      } 
+      token->string[count] = '\0';
+      return token;
     }
-    else
-      return makeToken(SB_PERIOD, ln, cn);
+    return makeToken(SB_PERIOD, ln, cn);
   case CHAR_EXCLAIMATION:
     ln = lineNo;
     cn = colNo;

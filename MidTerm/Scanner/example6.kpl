@@ -1,10 +1,10 @@
 Program Example6;
    Const c1 = 10;
   	 c2 = 'a';
-   Type t1 = array(. 10 .) of integer;
+   Type t1 = array(.10.) of integer;
    Var v1 : Integer;
-       v2 : Array(. 10 .) of t1;
-       a : Double;
+       v2 : Array(.10.) of t1;
+       a : Array(.5.) of Double;
        b : String;
    Function F(p1 : Integer; Var p2 : char) : Integer;
      Begin
@@ -20,10 +20,9 @@ Program Example6;
          v3 : char;
      begin
 	v3 := 'a';
-        v1 := f(c3,v3);
      end;
 
 Begin
      call p(c1);
-     a := 5.5;
+     a(.2.) := 5.5;
 End.
