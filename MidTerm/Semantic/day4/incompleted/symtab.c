@@ -134,7 +134,11 @@ ConstantValue* duplicateConstantValue(ConstantValue* v) {
   else if (v->type == TP_DOUBLE)
     value->doubleValue = v->doubleValue;
   else 
-    value->stringValue = v->stringValue;
+  {
+    value->stringValue = (char*) malloc(MAX_IDENT_LEN*sizeof(char));
+    strcpy(value->stringValue,v->stringValue);
+  }
+
   return value;
 }
 
