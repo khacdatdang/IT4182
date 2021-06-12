@@ -210,7 +210,7 @@ ConstantValue* compileUnsignedConstant(void) {
     break;
   case TK_DOUBLE:
     eat(TK_DOUBLE);
-    constValue = makeDoubleConstant(currentToken->d_value);
+    constValue = makeDoubleConstant(atof(currentToken->string));
     break;
   case TK_STRING:
     eat(TK_DOUBLE);
@@ -274,7 +274,7 @@ ConstantValue* compileConstant2(void) {
     break;
   case TK_DOUBLE:
     eat(TK_DOUBLE);
-    constValue = makeDoubleConstant(currentToken->d_value);
+    constValue = makeDoubleConstant(atof(currentToken->string));
     break;
   case TK_IDENT:
     eat(TK_IDENT);
@@ -449,40 +449,97 @@ void compileStatement(void) {
   }
 }
 
-Type* compileLValue(void) {
-  // TODO: parse a lvalue (a variable, an array element, a parameter, the current function identifier)
-  Object* var;
-  Type* varType;
+Type *compileLValue(void)
+{
+  Object *var;
+  Type *varType;
+
   eat(TK_IDENT);
-  // check if the identifier is a function identifier, or a variable identifier, or a parameter  
+  // check if the identifier is a function identifier, or a variable identifier, or a parameter
   var = checkDeclaredLValueIdent(currentToken->string);
+  // variable obj
   if (var->kind == OBJ_VARIABLE)
   {
     if (var->varAttrs->type->typeClass == TP_ARRAY)
-        varType = compileIndexes(var->varAttrs->type);
-      else 
-        varType = var->varAttrs->type;
+    {
+      varType = compileIndexes(var->varAttrs->type);
+    }
+    else
+    {
+      varType = var->varAttrs->type;
+    }
   }
   else if (var->kind == OBJ_PARAMETER)
+  {
     varType = var->paramAttrs->type;
+  }
   else if (var->kind == OBJ_FUNCTION)
+  {
     varType = var->funcAttrs->returnType;
-  else 
+  }
+  else
+  {
     error(ERR_INVALID_LVALUE, currentToken->lineNo, currentToken->colNo);
-
+  }
   return varType;
+}
+
+Type** compileRValue(void){
+  Type** typeList;
+  Type* type;
+  typeList = (Type**) malloc(10*sizeof(Type*));  
+  int count = 0;
+
+  type = compileExpression();
+  typeList[count++] = type;
+  assert("Parsing first right value");
+  while (lookAhead->tokenType == SB_COMMA)
+  {
+    eat(SB_COMMA);
+    type = compileExpression();
+    typeList[count++] = type;
+  }
+  printf("%d \n",count);
+  return typeList;
 }
 
 void compileAssignSt(void) {
   // TODO: parse the assignment and check type consistency
  // printf("Checking assign\n");
   Type* varType;
-  Type* expType;
+  Type** expType;
+  int count = 0;
+  int count2 = 0;
+  Type** varTypeList;
+  varTypeList = (Type** ) malloc(10 * sizeof(Type*));
 
   varType = compileLValue();
+  varTypeList[count++] = varType;
+
+  while (lookAhead->tokenType == SB_COMMA)
+  {
+    eat(SB_COMMA);
+    varType = compileLValue();
+    varTypeList[count++] = varType;
+  }
+
   eat(SB_ASSIGN);
-  expType = compileExpression();
-  checkTypeEquality(varType, expType);
+  assert("Parsing Right value");
+  expType = compileRValue();
+  
+  do
+  {
+    if (varTypeList[count2] == NULL)
+      error(ERR_MISSING_LEFT,currentToken->lineNo,currentToken->lineNo);
+    else if (expType[count2] == NULL)
+      error(ERR_MISSING_RIGHT,currentToken->lineNo,currentToken->lineNo);
+    else 
+    {
+      checkTypeEquality(varTypeList[count2], expType[count2]);
+      count2 += 1;
+    }
+  } while (varTypeList[count2] != NULL || expType[count2]!= NULL);
+  
 }
 
 void compileCallSt(void) {
@@ -570,8 +627,9 @@ void compileArgument(Object* param) {
 
 void compileArguments(ObjectNode* paramList) {
   //TODO: parse a list of arguments, check the consistency of the arguments and the given parameters
+  
   ObjectNode* node = paramList;
-
+  assert("Parsing argument");
   switch (lookAhead->tokenType) {
   case SB_LPAR:
     eat(SB_LPAR);
