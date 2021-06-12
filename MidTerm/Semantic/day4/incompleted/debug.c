@@ -42,6 +42,12 @@ void printConstantValue(ConstantValue* value) {
   case TP_CHAR:
     printf("\'%c\'",value->charValue);
     break;
+  case TP_STRING:
+    printf("%s",value->stringValue);
+    break;
+  case TP_DOUBLE:
+    printf("%.5f",value->doubleValue);
+    break;
   default:
     break;
   }

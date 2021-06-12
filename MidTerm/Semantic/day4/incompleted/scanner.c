@@ -145,8 +145,7 @@ Token* readConstChar(void) {
 }
 Token *readString(void){
   Token *token = makeToken(TK_STRING, lineNo, colNo);
-  token->string[0] = '\"';
-  int count = 1;
+  int count = 0;
   readChar();
   while(1){
     if(count > MAX_IDENT_LEN){
@@ -168,7 +167,6 @@ Token *readString(void){
     return NULL;
   }
   else {
-    token->string[count] = '\"';
     count++;
   }
   token->string[count] = '\0';

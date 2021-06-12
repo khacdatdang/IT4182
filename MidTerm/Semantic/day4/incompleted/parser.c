@@ -254,6 +254,7 @@ ConstantValue* compileConstant(void) {
     break;
   case TK_STRING:
     eat(TK_STRING);
+  
     constValue = makeStringConstant(currentToken->string);
     break;
   default:

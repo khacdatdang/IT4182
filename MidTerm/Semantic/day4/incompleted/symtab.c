@@ -112,7 +112,8 @@ ConstantValue* makeCharConstant(char ch) {
 ConstantValue* makeStringConstant(char* str) {
   ConstantValue* value = (ConstantValue*) malloc(sizeof(ConstantValue));
   value->type = TP_STRING;
-  value->stringValue = str;
+  value->stringValue = (char*) malloc (MAX_IDENT_LEN * sizeof(char));
+  strcpy(value->stringValue,str) ;
   return value;
 }
 
