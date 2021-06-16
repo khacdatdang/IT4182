@@ -7,7 +7,7 @@
 #define __PARSER_H__
 #include "token.h"
 #include "symtab.h"
-
+#define MAX_ASSIGN_NUMBER 100
 void scan(void);
 void eat(TokenType tokenType);
 

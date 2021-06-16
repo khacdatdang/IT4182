@@ -148,7 +148,7 @@ Token *readString(void){
   int count = 0;
   readChar();
   while(1){
-    if(count > MAX_IDENT_LEN){
+    if(count > MAX_STRING_LEN){
       error(ERR_IDENT_TOO_LONG, lineNo, colNo);
       return NULL;
     }

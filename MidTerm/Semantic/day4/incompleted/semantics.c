@@ -171,7 +171,6 @@ void checkTypeEquality(Type* type1, Type* type2) {
 Type* upcastType(Type* type1, Type* type2){
     checkNumberType(type1);
     checkNumberType(type2);
-
     if (type1->typeClass == TP_DOUBLE)
         return type1;
     else

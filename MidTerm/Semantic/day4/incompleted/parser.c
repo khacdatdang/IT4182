@@ -494,8 +494,8 @@ void compileAssignSt(void) {
 
   Type** varTypeList;
   Type** expTypeList;
-  varTypeList = (Type** ) malloc(10 * sizeof(Type*));
-  expTypeList = (Type** ) malloc(10 * sizeof(Type*));
+  varTypeList = (Type** ) malloc(MAX_ASSIGN_NUMBER * sizeof(Type*));
+  expTypeList = (Type** ) malloc(MAX_ASSIGN_NUMBER * sizeof(Type*));
 
   varType = compileLValue();
   varTypeList[count++] = varType;
@@ -715,7 +715,7 @@ void compileCondition(void) {
   }
 
   Type* type2 = compileExpression();
-  if (type1->typeClass == TK_DOUBLE)
+  if (type1->typeClass == TP_DOUBLE)
       checkNumberType(type2);
   else
     checkTypeEquality(type1, type2);

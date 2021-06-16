@@ -46,7 +46,7 @@ struct ErrorMessage errors[31] = {
   {ERR_TYPE_INCONSISTENCY, "Type inconsistency"},
   {ERR_PARAMETERS_ARGUMENTS_INCONSISTENCY, "The number of arguments and the number of parameters are inconsistent."},
   {ERR_MISSING_LEFT,"Missing identification in left"},
-  {ERR_MISSING_RIGHT,"Missing identification in right"}
+  {ERR_MISSING_RIGHT,"Missing expression in right"}
 };
 
 void error(ErrorCode err, int lineNo, int colNo) {
