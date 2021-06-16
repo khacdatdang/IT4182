@@ -490,7 +490,8 @@ void compileAssignSt(void) {
  // printf("Checking assign\n");
   Type* varType;
   Type* expType;
-  int count = 0;
+  int count1 = 0;
+  int count2 = 0;
 
   Type** varTypeList;
   Type** expTypeList;
@@ -498,46 +499,36 @@ void compileAssignSt(void) {
   expTypeList = (Type** ) malloc(MAX_ASSIGN_NUMBER * sizeof(Type*));
 
   varType = compileLValue();
-  varTypeList[count++] = varType;
+  varTypeList[count1++] = varType;
 
   while (lookAhead->tokenType == SB_COMMA)
   {
     eat(SB_COMMA);
     varType = compileLValue();
-    varTypeList[count++] = varType;
+    varTypeList[count1++] = varType;
   }
 
   eat(SB_ASSIGN);
 
-  count = 0;
-  
   expType = compileExpression();
-  expTypeList[count++] = expType;
+  expTypeList[count2++] = expType;
 
   while (lookAhead->tokenType == SB_COMMA)
   {
     eat(SB_COMMA);
     expType = compileExpression();
-    expTypeList[count++] = expType;
+    expTypeList[count2++] = expType;
   }
-  
-  count = 0;
-  do
-  {
-    if (varTypeList[count] == NULL)
-      error(ERR_MISSING_LEFT,currentToken->lineNo,currentToken->lineNo);
-    else if (expTypeList[count] == NULL)
-      error(ERR_MISSING_RIGHT,currentToken->lineNo,currentToken->lineNo);
-    else 
-    {
-        if (varTypeList[count]->typeClass == TP_DOUBLE)
-            checkNumberType(expTypeList[count]);
+  if (count1 < count2)
+      error(ERR_MISSING_LEFT, currentToken->lineNo, currentToken->colNo);
+  else if (count1 > count2)
+      error(ERR_MISSING_RIGHT, currentToken->lineNo, currentToken->colNo);
+  else
+    for (int i = 0; i < count1; i++ )
+        if (varTypeList[i]->typeClass == TP_DOUBLE)
+            checkNumberType(expTypeList[i]);
         else
-            checkTypeEquality(varTypeList[count], expTypeList[count]);
-      count += 1;
-    }
-  } while (varTypeList[count] != NULL || expTypeList[count]!= NULL);
-  
+            checkTypeEquality(varTypeList[i], expTypeList[i]);
 }
 
 void compileCallSt(void) {
