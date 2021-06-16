@@ -15,7 +15,7 @@ Program Example6;
        f := c1;
      End;
 
-   procedure p(v1 : integer);
+   procedure p(v1 : double);
      const c1 = 'a';
            c3 = 10;
      type t1 = integer;

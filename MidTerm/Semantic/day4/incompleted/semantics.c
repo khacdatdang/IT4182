@@ -168,4 +168,14 @@ void checkTypeEquality(Type* type1, Type* type2) {
      error(ERR_TYPE_INCONSISTENCY,currentToken->lineNo, currentToken->colNo);
 }
 
+Type* upcastType(Type* type1, Type* type2){
+    checkNumberType(type1);
+    checkNumberType(type2);
+
+    if (type1->typeClass == TP_DOUBLE)
+        return type1;
+    else
+        return type2;
+}
+
 

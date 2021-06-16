@@ -51,7 +51,7 @@ Type* compileExpression(void);
 Type* compileExpression2(void);
 Type* compileExpression3(void);
 Type* compileTerm(void);
-void compileTerm2(void);
+Type* compileTerm2(void);
 Type* compileFactor(void);
 Type* compileIndexes(Type* arrayType);
 

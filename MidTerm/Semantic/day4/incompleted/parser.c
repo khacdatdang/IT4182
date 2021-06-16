@@ -467,16 +467,16 @@ Type *compileLValue(void)
     }
     else
     {
-      varType = var->varAttrs->type;
+      varType = duplicateType(var->varAttrs->type);
     }
   }
   else if (var->kind == OBJ_PARAMETER)
   {
-    varType = var->paramAttrs->type;
+    varType = duplicateType(var->paramAttrs->type);
   }
   else if (var->kind == OBJ_FUNCTION)
   {
-    varType = var->funcAttrs->returnType;
+    varType = duplicateType(var->funcAttrs->returnType);
   }
   else
   {
@@ -530,7 +530,10 @@ void compileAssignSt(void) {
       error(ERR_MISSING_RIGHT,currentToken->lineNo,currentToken->lineNo);
     else 
     {
-      checkTypeEquality(varTypeList[count], expTypeList[count]);
+        if (varTypeList[count]->typeClass == TP_DOUBLE)
+            checkNumberType(expTypeList[count]);
+        else
+            checkTypeEquality(varTypeList[count], expTypeList[count]);
       count += 1;
     }
   } while (varTypeList[count] != NULL || expTypeList[count]!= NULL);
@@ -594,11 +597,17 @@ void compileForSt(void)
 
   eat(SB_ASSIGN);
   type = compileExpression();
-  checkTypeEquality(type, var->varAttrs->type);
+  if (var->varAttrs->type->typeClass == TP_DOUBLE)
+      checkNumberType(type);
+  else
+    checkTypeEquality(var->varAttrs->type, type);
 
   eat(KW_TO);
   type = compileExpression();
-  checkTypeEquality(type, var->varAttrs->type);
+    if (var->varAttrs->type->typeClass == TP_DOUBLE)
+        checkNumberType(type);
+    else
+        checkTypeEquality(var->varAttrs->type, type);
 
   eat(KW_DO);
   compileStatement();
@@ -611,11 +620,17 @@ void compileArgument(Object* param) {
   Type* type;
   if (param->paramAttrs->kind == PARAM_VALUE){
     type = compileExpression();
-    checkTypeEquality(type, param->paramAttrs->type);
+    if (param->paramAttrs->type->typeClass == TP_DOUBLE)
+        checkNumberType(type);
+    else
+        checkTypeEquality(param->paramAttrs->type, type);
   }
   else {
     type = compileLValue();
-    checkTypeEquality(type, param->paramAttrs->type);
+      if (param->paramAttrs->type->typeClass == TP_DOUBLE)
+          checkNumberType(type);
+      else
+          checkTypeEquality(param->paramAttrs->type, type);
   }
   
 }
@@ -700,7 +715,10 @@ void compileCondition(void) {
   }
 
   Type* type2 = compileExpression();
-  checkTypeEquality(type1, type2);
+  if (type1->typeClass == TK_DOUBLE)
+      checkNumberType(type2);
+  else
+    checkTypeEquality(type1, type2);
 }
 
 Type* compileExpression(void) {
@@ -731,8 +749,7 @@ Type* compileExpression2(void) {
   type2 = compileExpression3();
   if (type2 == NULL) return type1;
   else {
-    checkTypeEquality(type1,type2);
-    return type1;
+    return upcastType(type1,type2);
   }
 }
 
@@ -749,8 +766,7 @@ Type* compileExpression3(void) {
     checkNumberType(type1);
     type2 = compileExpression3();
     if (type2 != NULL)
-      checkNumberType(type2);
-    return type1;
+      return upcastType(type1,type2);
     break;
   case SB_MINUS:
     eat(SB_MINUS);
@@ -758,8 +774,7 @@ Type* compileExpression3(void) {
     checkNumberType(type1);
     type2 = compileExpression3();
     if (type2 != NULL)
-      checkNumberType(type2);
-    return type1;
+        return upcastType(type1,type2);
     break;
     // check the FOLLOW set
   case KW_TO:
@@ -788,30 +803,39 @@ Type* compileExpression3(void) {
 
 Type* compileTerm(void) {
   // TODO: check type of Term2
-  Type* type;
+  Type* type1;
+  Type* type2;
 
-  type = compileFactor();
-  compileTerm2();
+  type1 = compileFactor();
+  type2 = compileTerm2();
 
-  return type;
+  if (type2 != NULL)
+      return upcastType(type1,type2);
+  return type1;
 }
 
-void compileTerm2(void) {
+Type* compileTerm2(void) {
   // TODO: check type of term2
-  Type* type;
-
+  Type* type1;
+  Type* type2;
   switch (lookAhead->tokenType) {
   case SB_TIMES:
     eat(SB_TIMES);
-    type = compileFactor();
-    checkNumberType(type);
-    compileTerm2();
+    type1 = compileFactor();
+    checkNumberType(type1);
+    type2 = compileTerm2();
+    if (type2 != NULL)
+        return upcastType(type1,type2);
+    return type1;
     break;
   case SB_SLASH:
     eat(SB_SLASH);
-    type = compileFactor();
-    checkNumberType(type);
-    compileTerm2();
+    type1 = compileFactor();
+    checkNumberType(type1);
+    type2 = compileTerm2();
+    if (type2 != NULL)
+      return upcastType(type1,type2);
+    return type1;
     break;
     // check the FOLLOW set
   case SB_PLUS:
@@ -836,6 +860,7 @@ void compileTerm2(void) {
   default:
     error(ERR_INVALID_TERM, lookAhead->lineNo, lookAhead->colNo);
   }
+    return  NULL;
 }
 
 Type* compileFactor(void) {

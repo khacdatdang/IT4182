@@ -25,5 +25,5 @@ void checkStringType(Type* type);
 void checkArrayType(Type* type);
 void checkBasicType(Type* type);
 void checkTypeEquality(Type* type1, Type* type2);
-
+Type* upcastType(Type* type1, Type* type2);
 #endif

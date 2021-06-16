@@ -72,9 +72,7 @@ int compareType(Type* type1, Type* type2) {
 	      return compareType(type1->elementType, type2->elementType);
       else return 0;
     } else return 1;
-  } 
-  else if (type1->typeClass == TP_DOUBLE && type2->typeClass == TP_INT)
-    return 1;
+  }
   else return 0;
 }
 

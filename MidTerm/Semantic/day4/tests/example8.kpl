@@ -4,11 +4,13 @@ VAR D: STRING;
     X: INTEGER;
     Y : DOUBLE;
     A: CHAR;
+
 BEGIN
 D:= "hello" ;
 I:= 1;
 x := 5;
 y := 10;
-
+for Y := 1 to 10 do
+    I := I + 1;
 END. (* Example 1 *)
 
