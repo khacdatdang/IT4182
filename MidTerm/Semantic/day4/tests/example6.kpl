@@ -10,6 +10,8 @@ Program Example6;
        b : Double;
        c : Integer;
        d : String;
+       e: Char;
+       g : Array(.10.) of integer;
    Function F(p1 : Integer; Var p2 : char) : Integer;
      Begin
        f := c1;
@@ -29,6 +31,6 @@ Program Example6;
 
 Begin
      call p(c1);
-     a(.2.), b := 5, 7.5;
-     b,c,d := c,5,"hello";
+     a(.2.), b, c:= 5, 7.5, F(c,e);
+     c := F(c,e);
 End.
