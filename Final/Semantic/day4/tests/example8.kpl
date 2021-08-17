@@ -1,0 +1,15 @@
+PROGRAM Example8; (* Example 8 *)
+VAR D: STRING;
+    X: DOUBLE;
+    Y : INTEGER;
+    I: INTEGER;
+    A: Array(.10.) of Double;
+
+BEGIN
+D:= "hello" ;
+X,Y := Y, 10;
+for I := 1 to 10 do
+    Y := Y + 1;
+A(.1.) := 2;
+END. (* Example 1 *)
+

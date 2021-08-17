@@ -1,0 +1,10 @@
+PROGRAM Example8; (* Example 8 *)
+VAR I : INTEGER;
+    A : INTEGER;
+BEGIN
+I:= 1;
+A := I ** 2;
+
+
+END. (* Example 1 *)
+
