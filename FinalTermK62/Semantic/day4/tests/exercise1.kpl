@@ -1,0 +1,11 @@
+PROGRAM EXERCISE1;
+VAR n : INTEGER;
+    i : INTEGER;
+    X : INTEGER;
+BEGIN
+n := READI;
+X := 1;
+FOR I := 0 TO N-1 DO
+    X := X * 2;
+CALL WRITEI(X);
+END.

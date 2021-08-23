@@ -1,0 +1,29 @@
+PROGRAM Example9; (* Example 8 *)
+CONST B = 1;
+VAR I : INTEGER;
+    A : INTEGER;
+    T : STRING;
+    Q : STRING;
+    S : DOUBLE;
+BEGIN
+A := I + 2;
+S := -.678 - 3;
+T := "hello" + "dat" ;
+
+SWITCH A+B
+BEGIN
+    CASE B :
+        I := READI;
+        BREAK;
+    CASE 2:
+    CASE 3:
+        FOR I := 1 TO 10 DO
+            CALL WRITEI(A);
+        BREAK;
+    DEFAULT:
+        I := 2  (* Khong duoc co dau ; vi compilestatement chu kp compile statementS*)
+END;
+
+
+END. (* Example 1 *)
+

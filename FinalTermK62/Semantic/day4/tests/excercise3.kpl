@@ -1,0 +1,24 @@
+PROGRAM Exercise3;
+VAR X : DOUBLE;
+    Y : CHAR;
+BEGIN
+SWITCH X
+BEGIN
+    CASE 0:
+    CASE 1:
+    CASE 2:
+        Y := 'F';
+    CASE 3:
+    CASE 4:
+        Y := 'D';
+    CASE 5 :
+    CASE 6:
+        Y := 'C';
+    CASE 7:
+    CASE 8:
+        Y := 'B';
+    CASE 9:
+    CASE 10:
+        Y := 'A';
+END;
+END.
