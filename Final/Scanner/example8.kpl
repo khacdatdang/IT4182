@@ -4,7 +4,7 @@ VAR I : INTEGER;
 BEGIN
 I:= 1;
 A := I ** 2;
-
+A ::= IF A > 0 RETURN A ELSE RETURN -A ;
 
 END. (* Example 1 *)
 

@@ -15,6 +15,7 @@
 
 Token *currentToken;
 Token *lookAhead;
+Token *nextToken;
 
 extern Type* intType;
 extern Type* charType;
@@ -438,6 +439,9 @@ void compileStatement(void) {
   case KW_FOR:
     compileForSt();
     break;
+  case KW_REPEAT:
+    compileRepeatSt();
+    break;
     // EmptySt needs to check FOLLOW tokens
   case SB_SEMICOLON:
   case KW_END:
@@ -486,49 +490,66 @@ Type *compileLValue(void)
 }
 
 void compileAssignSt(void) {
-  // TODO: parse the assignment and check type consistency
- // printf("Checking assign\n");
-  Type* varType;
-  Type* expType;
-  int count1 = 0;
-  int count2 = 0;
+    // TODO: parse the assignment and check type consistency
+    // printf("Checking assign\n");
+    Type* varType;
+    Type* expType;
+    int count1 = 0;
+    int count2 = 0;
 
-  Type** varTypeList;
-  Type** expTypeList;
-  varTypeList = (Type** ) malloc(MAX_ASSIGN_NUMBER * sizeof(Type*));
-  expTypeList = (Type** ) malloc(MAX_ASSIGN_NUMBER * sizeof(Type*));
+    Type** varTypeList;
+    Type** expTypeList;
+    varTypeList = (Type** ) malloc(MAX_ASSIGN_NUMBER * sizeof(Type*));
+    expTypeList = (Type** ) malloc(MAX_ASSIGN_NUMBER * sizeof(Type*));
 
-  varType = compileLValue();
-  varTypeList[count1++] = varType;
-
-  while (lookAhead->tokenType == SB_COMMA)
-  {
-    eat(SB_COMMA);
     varType = compileLValue();
     varTypeList[count1++] = varType;
-  }
 
-  eat(SB_ASSIGN);
+    if (lookAhead->tokenType == SB_COMMA || lookAhead->tokenType == SB_ASSIGN)
+    {
+        while (lookAhead->tokenType == SB_COMMA)
+        {
+            eat(SB_COMMA);
+            varType = compileLValue();
+            varTypeList[count1++] = varType;
+        };
 
-  expType = compileExpression();
-  expTypeList[count2++] = expType;
+        eat(SB_ASSIGN);
+        expType = compileExpression();
+        expTypeList[count2++] = expType;
 
-  while (lookAhead->tokenType == SB_COMMA)
-  {
-    eat(SB_COMMA);
-    expType = compileExpression();
-    expTypeList[count2++] = expType;
-  }
-  if (count1 < count2)
-      error(ERR_MISSING_LEFT, currentToken->lineNo, currentToken->colNo);
-  else if (count1 > count2)
-      error(ERR_MISSING_RIGHT, currentToken->lineNo, currentToken->colNo);
-  else
-    for (int i = 0; i < count1; i++ )
-        if (varTypeList[i]->typeClass == TP_DOUBLE)
-            checkNumberType(expTypeList[i]);
+        while (lookAhead->tokenType == SB_COMMA)
+        {
+            eat(SB_COMMA);
+            expType = compileExpression();
+            expTypeList[count2++] = expType;
+        }
+        if (count1 < count2)
+            error(ERR_MISSING_LEFT, currentToken->lineNo, currentToken->colNo);
+        else if (count1 > count2)
+            error(ERR_MISSING_RIGHT, currentToken->lineNo, currentToken->colNo);
         else
-            checkTypeEquality(varTypeList[i], expTypeList[i]);
+            for (int i = 0; i < count1; i++ )
+                if (varTypeList[i]->typeClass == TP_DOUBLE)
+                    checkNumberType(expTypeList[i]);
+                else
+                    checkTypeEquality(varTypeList[i], expTypeList[i]);
+    }
+    else if (lookAhead->tokenType == SB_CA)
+    {
+        Type* rValue1;
+        Type* rValue2;
+        eat(SB_CA);
+        eat(KW_IF);
+        compileCondition();
+        eat(KW_RETURN);
+        rValue1 = compileExpression();
+        checkTypeEquality(varType,rValue1);
+        eat(KW_ELSE);
+        eat(KW_RETURN);
+        rValue2 = compileExpression();
+        checkTypeEquality(varType,rValue2);
+    }
 }
 
 void compileCallSt(void) {
@@ -574,6 +595,13 @@ void compileDoWhileSt(void)
   compileStatement();
   eat(KW_WHILE);
   compileCondition();
+}
+
+void compileRepeatSt(void){
+    eat(KW_REPEAT);
+    compileStatement();
+    eat(KW_UNTIL);
+    compileCondition();
 }
 void compileForSt(void)
 {
@@ -785,6 +813,9 @@ Type* compileExpression3(void) {
   case KW_END:
   case KW_ELSE:
   case KW_THEN:
+  case KW_RETURN:
+  case KW_UNTIL:
+  case SB_CA:
     return NULL;
     break;
   default:
@@ -830,7 +861,6 @@ Type* compileTerm2(void) {
         return type1;
         break;
     case SB_DOUBLETIMES:
-        assert("Having double times");
         eat(SB_DOUBLETIMES);
         type1 = compileFactor();
         checkNumberType(type1);
@@ -858,6 +888,9 @@ Type* compileTerm2(void) {
   case KW_END:
   case KW_ELSE:
   case KW_THEN:
+  case KW_RETURN:
+  case KW_UNTIL:
+  case SB_CA:
     break;
   default:
     error(ERR_INVALID_TERM, lookAhead->lineNo, lookAhead->colNo);

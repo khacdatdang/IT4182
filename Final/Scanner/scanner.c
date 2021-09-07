@@ -253,6 +253,15 @@ Token* getToken(void) {
       readChar();
       return token;
     }
+    else if (charCodes[currentChar] == CHAR_COLON){
+        readChar();
+        if (charCodes[currentChar] == CHAR_EQ)
+        {
+            readChar();
+            return makeToken(SB_CA,ln,cn);
+        }
+        else error(ERR_INVALID_SYMBOL,ln,cn );
+    }
     else 
     {
       token = makeToken(SB_COLON, ln, cn);
@@ -398,6 +407,7 @@ void printToken(Token *token) {
   case KW_DO: printf("KW_DO\n"); break;
   case KW_FOR: printf("KW_FOR\n"); break;
   case KW_TO: printf("KW_TO\n"); break;
+  case KW_RETURN : printf("KW_RETURN\n"); break;
 
   case SB_SEMICOLON: printf("SB_SEMICOLON\n"); break;
   case SB_COLON: printf("SB_COLON\n"); break;
@@ -419,6 +429,8 @@ void printToken(Token *token) {
   case SB_LSEL: printf("SB_LSEL\n"); break;
   case SB_RSEL: printf("SB_RSEL\n"); break;
   case SB_DOUBLETIMES : printf("SB_DOUBLETIMES\n"); break;
+  case SB_CA :
+      printf("SB_COLONASSIGN\n");break;
   }
 }
 
